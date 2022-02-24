@@ -84,10 +84,52 @@ public class SellerDaoImplJDBC implements SellerDao{
         return dep;
     }
 
+    //Lista todos os itens da lista
     @Override
     public List<Seller> findAll() {
-        return null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        try {
+            //comandos SQL,
+            st = conn.prepareStatement(
+                    "SELECT seller.*,department.Name as DepName "
+                            + "FROM seller INNER JOIN department "
+                            + "ON seller.DepartmentId = department.Id "
+                            + "ORDER BY Name");
+
+            //executa o comando
+            rs = st.executeQuery();
+
+            List<Seller> list = new ArrayList<>();
+            Map<Integer, Department> map = new HashMap<>();
+
+            //como a lista pode retornar mais d eum resultado,
+            // utilizamos o while para mostrar o resultado enquanto estiver um proximo
+            while (rs.next()) {
+
+                //uma logica para testar se o departamento ja exixtir vou reaproveitar
+                Department dep = map.get(rs.getInt("DepartmentId"));
+
+                //se o departamento for nulo, ele instacia uma novo
+                if (dep == null){
+                    dep = instantiateDepartment(rs);
+                    map.put(rs.getInt("DepartmentId"), dep);
+                }
+
+                Seller obj = instantiateSeller(rs, dep);
+                list.add(obj);
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+            DB.closeRsultSet(rs);
+        }
     }
+
 
     // cria uma lista para achar todos os itens de um departemento
     @Override
