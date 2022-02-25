@@ -1,7 +1,8 @@
-package model.dao;
+package model.dao.impl;
 
 import db.DB;
 import db.DbException;
+import model.dao.SellerDao;
 import model.entities.Department;
 import model.entities.Seller;
 
@@ -11,11 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SellerDaoImplJDBC implements SellerDao{
+public class SellerDaoJDBC implements SellerDao {
 
     private Connection conn;
 
-    public SellerDaoImplJDBC(Connection conn) {
+    public SellerDaoJDBC(Connection conn) {
         this.conn = conn;
     }
 
@@ -100,7 +101,7 @@ public class SellerDaoImplJDBC implements SellerDao{
             st.setInt(1, id);
 
             st.executeUpdate();
-            
+
         } catch (SQLException e) {
             throw  new DbException(e.getMessage());
         }
